@@ -1,9 +1,7 @@
-import React from "react";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
+import Typography from "@mui/material/Typography";
 import { Route } from "../constant/Route";
-import { grey } from "@mui/material/colors";
 
 const Footer = () => {
   return (
@@ -14,7 +12,6 @@ const Footer = () => {
         px: 2,
         mt: "auto",
       }}
-      bgcolor={grey[200]}
     >
       <Typography variant="body1">My Application Footer</Typography>
       <Typography variant="body2" color="text.secondary">
