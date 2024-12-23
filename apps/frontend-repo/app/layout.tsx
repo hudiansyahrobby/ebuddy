@@ -1,10 +1,10 @@
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Header from "../components/Header";
 import Footer from "../components/Footer";
-import CssBaseline from "@mui/material/CssBaseline";
-import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
+import Header from "../components/Header";
+import AppTheme from "../theme/AppTheme";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,18 +27,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Box
-        component="body"
-        className={`${geistSans.variable} ${geistMono.variable}`}
-        sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
-      >
-        <CssBaseline />
-        <Header />
-        <Container component="main" maxWidth="xl" sx={{ flex: 1 }}>
+      <AppTheme>
+        <Box
+          component="body"
+          className={`${geistSans.variable} ${geistMono.variable}`}
+          sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+        >
+          <CssBaseline />
+          <Header />
+
           {children}
-        </Container>
-        <Footer />
-      </Box>
+          <Footer />
+        </Box>
+      </AppTheme>
     </html>
   );
 }
