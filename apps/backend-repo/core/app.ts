@@ -1,16 +1,15 @@
-import express, { Request, Response, type Express } from "express";
+import express, { type Express } from "express";
 import dotenv from "dotenv";
+import userRoutes from "../routes/userRoutes";
 
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 6000;
+const port = process.env.PORT ?? 6000;
 
 app.use(express.json());
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello from Express backend with TypeScript!");
-});
+app.use("/", userRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
