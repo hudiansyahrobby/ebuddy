@@ -1,13 +1,24 @@
-import express, { Request, Response } from "express";
+import { Router } from "express";
+import userController from "../controller/userController";
+import { updateUserSchema, userAuthSchema } from "../dto/userDto";
+import authMiddleware from "../middleware/authMiddleware";
+import { validateData } from "../middleware/validationMiddleware";
 
-const router = express.Router();
+const router: Router = Router();
 
-router.get("/update-user-data", (req: Request, res: Response) => {
-  res.send("Update User Data");
-});
+router.post("/signup", validateData(userAuthSchema), userController.signup);
 
-router.get("/fetch-user-data", (req: Request, res: Response) => {
-  res.send("Fetch User Data");
-});
+router.post("/login", validateData(userAuthSchema), userController.login);
+
+router.post("/logout", authMiddleware, userController.logout);
+
+router.put(
+  "/update-user-data",
+  authMiddleware,
+  validateData(updateUserSchema),
+  userController.updateUserData
+);
+
+router.get("/fetch-user-data", authMiddleware, userController.fetchUserData);
 
 export default router;
