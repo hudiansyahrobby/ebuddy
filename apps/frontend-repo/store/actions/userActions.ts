@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
-import { UpdateUserRequest } from "../../../backend-repo/entities/user";
+import { UpdateUserValues } from "@repo/types";
 import { fetchUser, updateUser } from "../../apis/userApi";
 
 export const fetchUserInfo = createAsyncThunk(
@@ -21,7 +21,7 @@ export const fetchUserInfo = createAsyncThunk(
 
 export const updateUserInfo = createAsyncThunk(
   "user/update-user-info",
-  async (body: UpdateUserRequest, { rejectWithValue }) => {
+  async (body: UpdateUserValues, { rejectWithValue }) => {
     try {
       const data = await updateUser(body);
       return data.data;

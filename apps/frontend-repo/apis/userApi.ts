@@ -1,9 +1,8 @@
-import { TUser } from "@repo/shared-types/user";
+import { TUser, UpdateUserValues } from "@repo/types";
 import { AxiosResponse } from "axios";
 import axios from "./axios";
 
 import { Endpoint } from "./../constant/Endpoint";
-import { UpdateUserRequest, User } from "./../../backend-repo/entities/user";
 import { CommonResponse } from "../types/common";
 
 export const fetchUser = async () => {
@@ -12,10 +11,10 @@ export const fetchUser = async () => {
   return response;
 };
 
-export const updateUser = async (data: UpdateUserRequest) => {
+export const updateUser = async (data: UpdateUserValues) => {
   const response = await axios.put<
-    UpdateUserRequest,
-    AxiosResponse<CommonResponse<User>>
+    UpdateUserValues,
+    AxiosResponse<CommonResponse<TUser>>
   >(Endpoint.User.Update, data);
 
   return response;

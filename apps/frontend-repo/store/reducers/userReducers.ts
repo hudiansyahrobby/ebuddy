@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { TUser } from "@repo/shared-types/user";
+import { TUser } from "@repo/types";
 import { fetchUserInfo, updateUserInfo } from "../actions/userActions";
 
 type UserState = {

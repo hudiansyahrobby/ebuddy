@@ -1,18 +1,22 @@
 import { Request, Response } from "express";
-import userRepository from "../repository/userCollection";
+import {
+  fetchUserDataFromFirestore,
+  loginByEmailAndPassword,
+  logoutUser,
+  saveUserDataToFirestore,
+  signUpByEmailAndPassword,
+  updateUserDataInFirestore,
+} from "../repository/userCollection";
 import { FirebaseError } from "firebase/app";
 import { FirestoreError } from "firebase/firestore";
-import { TUser } from "@repo/shared-types/user";
+import { TUser } from "@repo/types";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/responseUtils";
 
 const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    const userCredential = await userRepository.loginByEmailAndPassword(
-      email,
-      password
-    );
+    const userCredential = await loginByEmailAndPassword(email, password);
 
     const accessToken = await userCredential.user.getIdToken();
 
@@ -42,10 +46,7 @@ const signup = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    const userCredential = await userRepository.signUpByEmailAndPassword(
-      email,
-      password
-    );
+    const userCredential = await signUpByEmailAndPassword(email, password);
 
     const { email: userEmail, uid } = userCredential.user;
     const data: TUser = {
@@ -54,7 +55,7 @@ const signup = async (req: Request, res: Response) => {
       displayName: email?.split("@")[0] || "",
     };
 
-    await userRepository.saveUserDataToFirestore(uid, data);
+    await saveUserDataToFirestore(uid, data);
 
     sendSuccessResponse(res, 200, "Sign up successful", userCredential);
   } catch (error) {
@@ -80,7 +81,7 @@ const signup = async (req: Request, res: Response) => {
 
 const logout = async (req: Request, res: Response) => {
   try {
-    await userRepository.logoutUser();
+    await logoutUser();
 
     sendSuccessResponse(res, 200, "Logout successful");
   } catch (error) {
@@ -102,7 +103,7 @@ const fetchUserData = async (req: Request, res: Response) => {
   const id = req.userId as string;
 
   try {
-    const user = await userRepository.fetchUserDataFromFirestore(id);
+    const user = await fetchUserDataFromFirestore(id);
 
     sendSuccessResponse(res, 200, "Fetch user data successful", user);
   } catch (error) {
@@ -125,7 +126,7 @@ const updateUserData = async (req: Request, res: Response) => {
   const { displayName } = req.body;
 
   try {
-    const user = await userRepository.fetchUserDataFromFirestore(id);
+    const user = await fetchUserDataFromFirestore(id);
 
     const updatedData: TUser = {
       email: user.email,
@@ -133,7 +134,7 @@ const updateUserData = async (req: Request, res: Response) => {
       displayName,
     };
 
-    await userRepository.updateUserDataInFirestore(id, updatedData);
+    await updateUserDataInFirestore(id, updatedData);
 
     sendSuccessResponse(res, 200, "Update user data successful", updatedData);
   } catch (error) {

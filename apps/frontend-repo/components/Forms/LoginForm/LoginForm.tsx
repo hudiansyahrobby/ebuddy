@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { Route } from "../../../constant/Route";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
-import { userAuthSchema, UserAuthValues } from "@repo/shared-types/auth";
+import { userAuthSchema, UserAuthValues } from "@repo/types";
 import { LoginCard } from "./LoginForm.styled";
 import { loginUser } from "../../../store/actions/authActions";
 import { useEffect } from "react";
@@ -42,6 +42,7 @@ export default function LoginForm() {
 
   useEffect(() => {
     if (auth.userToken) {
+      localStorage.setItem("token", auth.userToken);
       router.push(Route.Home); // Redirect to the dashboard after successful login
     }
   }, [auth.userToken, router]);

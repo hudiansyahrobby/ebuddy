@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { updateUserSchema, UpdateUserValues } from "@repo/shared-types/user";
+import { updateUserSchema, UpdateUserValues } from "@repo/types";
 import { UserFormContainer } from "./UserForm.styled";
 import UpdateButton from "../../Buttons/UpdateButton/UpdateButton";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";

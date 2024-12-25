@@ -7,12 +7,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "../config/firebaseConfig";
-import { TUser } from "@repo/shared-types/user";
+import { TUser } from "@repo/types";
 import { firestoreCollection } from "../constants/firestoreCollection";
-
-const getUserByEmail = async (email: string) => {
-  return admin.auth().getUserByEmail(email);
-};
 
 const signUpByEmailAndPassword = async (email: string, password: string) => {
   return createUserWithEmailAndPassword(auth, email, password);
@@ -54,8 +50,7 @@ const updateUserDataInFirestore = async (
   await updateDoc(docRef, data);
 };
 
-export default {
-  getUserByEmail,
+export {
   loginByEmailAndPassword,
   signUpByEmailAndPassword,
   logoutUser,
