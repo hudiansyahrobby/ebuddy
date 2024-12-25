@@ -7,7 +7,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "../config/firebaseConfig";
-import { User } from "../entities/user";
+import { TUser } from "@repo/shared-types/user";
 import { firestoreCollection } from "../constants/firestoreCollection";
 
 const getUserByEmail = async (email: string) => {
@@ -26,7 +26,11 @@ const logoutUser = async () => {
   return signOut(auth);
 };
 
-const saveUserDataToFirestore = async (id: string, data: User) => {
+const generateCustomToken = async (uid: string) => {
+  return admin.auth().createCustomToken(uid);
+};
+
+const saveUserDataToFirestore = async (id: string, data: TUser) => {
   const docRef = doc(db, firestoreCollection.users, id);
   await setDoc(docRef, data);
 };
@@ -44,9 +48,9 @@ const fetchUserDataFromFirestore = async (id: string) => {
 
 const updateUserDataInFirestore = async (
   id: string,
-  data: UpdateData<User>
+  data: UpdateData<TUser>
 ) => {
-  const docRef = doc(db, "users", id);
+  const docRef = doc(db, firestoreCollection.users, id);
   await updateDoc(docRef, data);
 };
 
@@ -58,4 +62,5 @@ export default {
   fetchUserDataFromFirestore,
   saveUserDataToFirestore,
   updateUserDataInFirestore,
+  generateCustomToken,
 };

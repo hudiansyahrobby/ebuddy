@@ -1,14 +1,17 @@
 {
   "name": "backend-repo",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "core/app.ts",
   "license": "MIT",
+  "type": "module",
   "scripts": {
-    "dev": "nodemon ./core/app.ts",
+    "dev": "tsup --watch --onSuccess \"node dist/app.cjs\"",
     "build": "tsc",
     "start": "node dist/core/app.js"
   },
   "dependencies": {
+    "@repo/shared-types": "*",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "firebase": "^11.1.0",
@@ -17,10 +20,12 @@
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.2",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
+    "tsup": "^8.3.5",
     "typescript": "^5.7.2"
   }
 }

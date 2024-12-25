@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import userRepository from "../repository/userCollection";
 import { FirebaseError } from "firebase/app";
 import { FirestoreError } from "firebase/firestore";
-import { User } from "../entities/user";
+import { TUser } from "@repo/shared-types/user";
+import { sendErrorResponse, sendSuccessResponse } from "../utils/responseUtils";
 
 const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -13,26 +14,26 @@ const login = async (req: Request, res: Response) => {
       password
     );
 
-    res.status(200).json({ message: "Login successful", data: userCredential });
+    const accessToken = await userCredential.user.getIdToken();
+
+    sendSuccessResponse(res, 200, "Login successful", { accessToken });
   } catch (error) {
     if (error instanceof FirebaseError) {
       switch (error.code) {
         case "auth/user-not-found":
-          res.status(404).json({ error: "User not found." });
+          sendErrorResponse(res, 404, "User not found.");
           break;
         case "auth/wrong-password":
-          res.status(400).json({ error: "Invalid password." });
+          sendErrorResponse(res, 400, "Invalid password");
           break;
         case "auth/invalid-email":
-          res.status(400).json({ error: "Invalid email." });
+          sendErrorResponse(res, 400, "Invalid email.");
           break;
         default:
-          res
-            .status(400)
-            .json({ error: "Failed to login.", details: error.message });
+          sendErrorResponse(res, 400, "Failed to login.", error.message);
       }
     } else {
-      res.status(500).json({ error: "Failed to login." });
+      sendErrorResponse(res, 500, "Failed to login.");
     }
   }
 };
@@ -47,7 +48,7 @@ const signup = async (req: Request, res: Response) => {
     );
 
     const { email: userEmail, uid } = userCredential.user;
-    const data: User = {
+    const data: TUser = {
       email: userEmail ?? "",
       uid,
       displayName: email?.split("@")[0] || "",
@@ -55,25 +56,24 @@ const signup = async (req: Request, res: Response) => {
 
     await userRepository.saveUserDataToFirestore(uid, data);
 
-    res
-      .status(200)
-      .json({ message: "Sign up successful", data: userCredential });
+    sendSuccessResponse(res, 200, "Sign up successful", userCredential);
   } catch (error) {
     if (error instanceof FirebaseError) {
       switch (error.code) {
         case "auth/email-already-in-use":
-          res.status(400).json({ error: "Email already in use." });
+          sendErrorResponse(res, 400, "Email already in use.");
           break;
         case "auth/invalid-email":
-          res.status(400).json({ error: "Invalid email." });
+          sendErrorResponse(res, 400, "Invalid email.");
           break;
         case "auth/weak-password":
-          res.status(400).json({ error: "Weak password." });
+          sendErrorResponse(res, 400, "Weak password.");
           break;
         default:
+          sendErrorResponse(res, 400, "Failed to signup.", error.message);
       }
     } else {
-      res.status(500).json({ error: "Failed to signup" });
+      sendErrorResponse(res, 500, "Failed to signup.");
     }
   }
 };
@@ -82,20 +82,18 @@ const logout = async (req: Request, res: Response) => {
   try {
     await userRepository.logoutUser();
 
-    res.status(200).json({ message: "logout successful" });
+    sendSuccessResponse(res, 200, "Logout successful");
   } catch (error) {
     if (error instanceof FirebaseError) {
       switch (error.code) {
         case "auth/user-not-found":
-          res.status(404).json({ error: "User not found." });
+          sendErrorResponse(res, 404, "User not found.");
           break;
         default:
-          res
-            .status(400)
-            .json({ error: "Failed to logout.", details: error.message });
+          sendErrorResponse(res, 400, "Failed to logout.", error.message);
       }
     } else {
-      res.status(500).json({ error: "Failed to logout" });
+      sendErrorResponse(res, 500, "Failed to logout.");
     }
   }
 };
@@ -106,18 +104,18 @@ const fetchUserData = async (req: Request, res: Response) => {
   try {
     const user = await userRepository.fetchUserDataFromFirestore(id);
 
-    res.status(200).json({ message: "fetch user data successful", data: user });
+    sendSuccessResponse(res, 200, "Fetch user data successful", user);
   } catch (error) {
     if (error instanceof FirestoreError) {
-      res
-        .status(400)
-        .json({ error: "Failed to fetch user data", details: error.message });
+      sendErrorResponse(res, 400, "Failed to fetch user data", error.message);
     } else if (error instanceof Error) {
-      res
-        .status(500)
-        .json({ error: error?.message || "Failed to fetch user data" });
+      sendErrorResponse(
+        res,
+        500,
+        error?.message || "Failed to fetch user data"
+      );
     } else {
-      res.status(500).json({ error: "Internal Server Error" });
+      sendErrorResponse(res, 500, "Internal Server Error");
     }
   }
 };
@@ -129,7 +127,7 @@ const updateUserData = async (req: Request, res: Response) => {
   try {
     const user = await userRepository.fetchUserDataFromFirestore(id);
 
-    const updatedData: User = {
+    const updatedData: TUser = {
       email: user.email,
       uid: user.uid,
       displayName,
@@ -137,27 +135,29 @@ const updateUserData = async (req: Request, res: Response) => {
 
     await userRepository.updateUserDataInFirestore(id, updatedData);
 
-    res
-      .status(200)
-      .json({ message: "update user data successful", data: updatedData });
+    sendSuccessResponse(res, 200, "Update user data successful", updatedData);
   } catch (error) {
     if (error instanceof FirebaseError) {
       switch (error.code) {
         case "not-found":
-          res.status(404).json({ error: "User not found." });
+          sendErrorResponse(res, 404, "User not found.");
           break;
         default:
-          res.status(400).json({
-            error: "Failed to update user data.",
-            details: error.message,
-          });
+          sendErrorResponse(
+            res,
+            400,
+            "Failed to update user data.",
+            error.message
+          );
       }
     } else if (error instanceof Error) {
-      res
-        .status(400)
-        .json({ error: error?.message || "Failed to update user data" });
+      sendErrorResponse(
+        res,
+        400,
+        error?.message || "Failed to update user data"
+      );
     } else {
-      res.status(500).json({ error: "Internal Server Error" });
+      sendErrorResponse(res, 500, "Internal Server Error");
     }
   }
 };

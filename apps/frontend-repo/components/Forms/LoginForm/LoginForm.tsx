@@ -1,31 +1,50 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import * as React from "react";
-import { LoginCard, LoginContainer } from "./LoginForm.styled";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
-import { LoginFormSchema, LoginFormValues } from "./LoginForm.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Route } from "../../../constant/Route";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
+import { userAuthSchema, UserAuthValues } from "@repo/shared-types/auth";
+import { LoginCard } from "./LoginForm.styled";
+import { loginUser } from "../../../store/actions/authActions";
+import { useEffect } from "react";
+import MainContainer from "../../Containers/MainContainer/MainContainer";
 
 export default function LoginForm() {
+  const router = useRouter();
+  const auth = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+
   const {
     handleSubmit,
     formState: { errors, isValid },
     control,
-  } = useForm<LoginFormValues>({
-    resolver: zodResolver(LoginFormSchema),
+  } = useForm<UserAuthValues>({
+    resolver: zodResolver(userAuthSchema),
     mode: "onChange",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
-  const onLogin = (data: LoginFormValues) => {
-    console.log(data);
+  const onLogin = async (data: UserAuthValues) => {
+    dispatch(loginUser(data));
   };
+
+  useEffect(() => {
+    if (auth.userToken) {
+      router.push(Route.Home); // Redirect to the dashboard after successful login
+    }
+  }, [auth.userToken, router]);
 
   return (
     <Container
@@ -38,7 +57,7 @@ export default function LoginForm() {
         display: "flex",
       }}
     >
-      <LoginContainer justifyContent="center" alignItems="center">
+      <MainContainer>
         <LoginCard variant="outlined">
           <Typography
             component="h1"
@@ -106,17 +125,23 @@ export default function LoginForm() {
               )}
             />
 
+            {auth.error && (
+              <Typography color="error" sx={{ textAlign: "center" }}>
+                {auth.error}
+              </Typography>
+            )}
+
             <Button
               type="submit"
-              disabled={!isValid}
+              disabled={!isValid || auth.loading}
               fullWidth
               variant="contained"
             >
-              Sign in
+              {auth.loading ? "Signing in..." : "Sign in"}
             </Button>
           </Box>
         </LoginCard>
-      </LoginContainer>
+      </MainContainer>
     </Container>
   );
 }

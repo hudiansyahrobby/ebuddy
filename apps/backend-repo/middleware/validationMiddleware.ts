@@ -11,9 +11,11 @@ export function validateData(schema: z.ZodObject<any, any>) {
         const errorMessages = error.errors.map((issue: any) => ({
           message: `${issue.path.join(".")} is ${issue.message}`,
         }));
-        res.status(422).json({ error: "Invalid data", errors: errorMessages });
+        res
+          .status(422)
+          .json({ message: "Invalid data", errors: errorMessages });
       } else {
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ message: "Internal Server Error" });
       }
     }
   };

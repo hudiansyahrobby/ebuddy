@@ -2,9 +2,9 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Footer from "../components/Footer";
-import Header from "../components/Header";
+import Header from "../components/Layouts/Header/Header";
 import AppTheme from "../theme/AppTheme";
+import ReduxProvider from "../providers/ReduxProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,19 +27,24 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <AppTheme>
-        <Box
-          component="body"
-          className={`${geistSans.variable} ${geistMono.variable}`}
-          sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
-        >
-          <CssBaseline />
-          <Header />
+      <ReduxProvider>
+        <AppTheme>
+          <Box
+            component="body"
+            className={`${geistSans.variable} ${geistMono.variable}`}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              minHeight: "100vh",
+            }}
+          >
+            <CssBaseline />
+            <Header />
 
-          {children}
-          <Footer />
-        </Box>
-      </AppTheme>
+            {children}
+          </Box>
+        </AppTheme>
+      </ReduxProvider>
     </html>
   );
 }

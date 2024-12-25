@@ -1,6 +1,7 @@
 import { Router } from "express";
 import userController from "../controller/userController";
-import { updateUserSchema, userAuthSchema } from "../dto/userDto";
+import { userAuthSchema } from "@repo/shared-types/auth";
+import { updateUserSchema } from "@repo/shared-types/user";
 import authMiddleware from "../middleware/authMiddleware";
 import { validateData } from "../middleware/validationMiddleware";
 
