@@ -6,6 +6,7 @@ const authMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
+  console.log(req.headers.authorization);
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     res.status(401).json({ error: "Unauthorized" });
@@ -19,6 +20,7 @@ const authMiddleware = async (
     req.userId = decodedToken.uid;
     next();
   } catch (error) {
+    console.log("ERROR", error);
     res.status(401).json({ error: "Unauthorized" });
   }
 };

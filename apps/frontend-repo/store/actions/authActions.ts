@@ -1,3 +1,4 @@
+"use client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { login, logout } from "../../apis/authApi";
 import { UserAuthValues } from "@repo/types";

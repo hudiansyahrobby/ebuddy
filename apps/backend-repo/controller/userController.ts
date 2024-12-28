@@ -20,6 +20,10 @@ const login = async (req: Request, res: Response) => {
 
     const accessToken = await userCredential.user.getIdToken();
 
+    res.cookie("token", accessToken, {
+      secure: false,
+    });
+
     sendSuccessResponse(res, 200, "Login successful", { accessToken });
   } catch (error) {
     if (error instanceof FirebaseError) {
@@ -107,12 +111,13 @@ const fetchUserData = async (req: Request, res: Response) => {
 
     sendSuccessResponse(res, 200, "Fetch user data successful", user);
   } catch (error) {
+    console.log("hell", error);
     if (error instanceof FirestoreError) {
       sendErrorResponse(res, 400, "Failed to fetch user data", error.message);
     } else if (error instanceof Error) {
       sendErrorResponse(
         res,
-        500,
+        400,
         error?.message || "Failed to fetch user data"
       );
     } else {

@@ -1,16 +1,47 @@
 import axios from "axios";
-
-export const getToken = () => {
-  const token = localStorage.getItem("token");
-
-  return token;
-};
+import { Route } from "../constant/Route";
+import Cookies from "js-cookie";
 
 const instance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
-  headers: {
-    Authorization: `Bearer ${getToken()}`,
-  },
 });
+
+instance.interceptors.request.use(
+  (config) => {
+    const token = Cookies.get("token");
+
+    console.log("TOKEN", token);
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (err) => {
+    // if (!err.response) throw err;
+    // const isUnauthorized = err.response.status === 401;
+    // if (isUnauthorized) {
+    //   localStorage.removeItem("token");
+    //   window.location.href = Route.Login;
+    //   return err;
+    // }
+    // throw err;
+  }
+);
+
+instance.interceptors.response.use(
+  (config) => {
+    return config;
+  },
+  (err) => {
+    //   if (!err.response) throw err;
+    //   const isUnauthorized = err.response.status === 401;
+    //   if (isUnauthorized) {
+    //     localStorage.removeItem("token");
+    //     window.location.href = Route.Login;
+    //     return err;
+    //   }
+    //   throw err;
+  }
+);
 
 export default instance;

@@ -1,3 +1,5 @@
+"use client";
+
 import { AxiosResponse } from "axios";
 import { UserAuthValues, TLoginResponse } from "@repo/types";
 import axios from "./axios";

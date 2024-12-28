@@ -1,11 +1,13 @@
 import * as firebase from "firebase/app";
 import {
+  connectAuthEmulator,
   createUserWithEmailAndPassword,
   getAuth,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
+import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 
 import dotenv from "dotenv";
 import admin from "firebase-admin";
@@ -39,6 +41,16 @@ const app = firebase.initializeApp(firebaseConfig);
 const auth = getAuth();
 
 const db = getFirestore(app);
+
+const functions = getFunctions(app);
+
+const NODE_ENV = process.env.NODE_ENV || "development";
+
+if (process.env.NODE_ENV === "development") {
+  connectAuthEmulator(auth, "http://localhost:9099");
+  connectFirestoreEmulator(db, "localhost", 8080);
+  connectFunctionsEmulator(functions, "localhost", 5001);
+}
 
 export {
   admin,

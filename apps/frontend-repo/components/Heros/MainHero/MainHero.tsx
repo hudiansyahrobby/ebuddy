@@ -2,6 +2,7 @@ import { colors, Grid2, Stack, Typography } from "@mui/material";
 import React from "react";
 import UserInfoModal from "../../Modals/UserInfoModal/UserInfoModal";
 import { MainHeroImage } from "./MainHero.styled";
+import Cookies from "js-cookie";
 
 const MainHero = () => {
   return (

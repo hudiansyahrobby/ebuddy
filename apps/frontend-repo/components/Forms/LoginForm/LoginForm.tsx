@@ -17,6 +17,7 @@ import { LoginCard } from "./LoginForm.styled";
 import { loginUser } from "../../../store/actions/authActions";
 import { useEffect } from "react";
 import MainContainer from "../../Containers/MainContainer/MainContainer";
+import cookie from "js-cookie";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -43,6 +44,7 @@ export default function LoginForm() {
   useEffect(() => {
     if (auth.userToken) {
       localStorage.setItem("token", auth.userToken);
+      cookie.set("token", auth.userToken);
       router.push(Route.Home); // Redirect to the dashboard after successful login
     }
   }, [auth.userToken, router]);

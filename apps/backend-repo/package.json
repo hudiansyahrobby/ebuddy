@@ -5,12 +5,14 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "tsup --watch --onSuccess \"node dist/app.cjs\"",
-    "build": "tsc",
-    "start": "node dist/core/app.js"
+    "dev": "tsup --watch --onSuccess \"nodemon dist/app.cjs\"",
+    "build": "tsup ./core/app.ts",
+    "start": "node dist/core/app.js",
+    "firebase:emulators": "firebase emulators:start --only functions"
   },
   "dependencies": {
     "@repo/types": "*",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
