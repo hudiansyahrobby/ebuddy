@@ -44,9 +44,9 @@ const db = getFirestore(app);
 
 const functions = getFunctions(app);
 
-const NODE_ENV = process.env.NODE_ENV || "development";
+const NODE_ENV = process.env.NODE_ENV;
 
-if (process.env.NODE_ENV === "development") {
+if (NODE_ENV === "development") {
   connectAuthEmulator(auth, "http://localhost:9099");
   connectFirestoreEmulator(db, "localhost", 8080);
   connectFunctionsEmulator(functions, "localhost", 5001);

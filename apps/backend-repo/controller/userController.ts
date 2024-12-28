@@ -111,7 +111,6 @@ const fetchUserData = async (req: Request, res: Response) => {
 
     sendSuccessResponse(res, 200, "Fetch user data successful", user);
   } catch (error) {
-    console.log("hell", error);
     if (error instanceof FirestoreError) {
       sendErrorResponse(res, 400, "Failed to fetch user data", error.message);
     } else if (error instanceof Error) {

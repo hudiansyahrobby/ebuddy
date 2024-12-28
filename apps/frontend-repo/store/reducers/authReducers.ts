@@ -1,15 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { loginUser, logoutUser } from "../actions/authActions";
+import Cookies from "js-cookie";
 
-// initialize userToken from local storage
-let userToken: string | null = null;
-
-if (typeof window !== "undefined") {
-  userToken = localStorage.getItem("token");
-}
+let userToken = Cookies.get("token") || undefined;
 
 type AuthState = {
-  userToken: string | null;
+  userToken: string | undefined;
   loading: boolean;
   error: null | string;
 };
@@ -34,7 +30,7 @@ export const authSlices = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, { payload }) => {
         state.loading = false;
-        state.userToken = payload?.accessToken ?? null;
+        state.userToken = payload?.accessToken;
         localStorage.setItem("token", payload?.accessToken ?? "");
       })
       .addCase(loginUser.rejected, (state, { payload }) => {
@@ -49,7 +45,7 @@ export const authSlices = createSlice({
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.loading = false;
-        state.userToken = null;
+        state.userToken = undefined;
         localStorage.removeItem("token");
       })
       .addCase(logoutUser.rejected, (state, action) => {

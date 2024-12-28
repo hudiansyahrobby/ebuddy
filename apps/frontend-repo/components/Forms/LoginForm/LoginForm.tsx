@@ -43,9 +43,8 @@ export default function LoginForm() {
 
   useEffect(() => {
     if (auth.userToken) {
-      localStorage.setItem("token", auth.userToken);
       cookie.set("token", auth.userToken);
-      router.push(Route.Home); // Redirect to the dashboard after successful login
+      router.push(Route.Home);
     }
   }, [auth.userToken, router]);
 
