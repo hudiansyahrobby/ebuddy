@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUser, logoutUser } from "../actions/authActions";
+import { loginUser, logoutUser, signupUser } from "../actions/authActions";
 import Cookies from "js-cookie";
 
 let userToken = Cookies.get("token") || undefined;
@@ -8,20 +8,42 @@ type AuthState = {
   userToken: string | undefined;
   loading: boolean;
   error: null | string;
+  success: boolean;
 };
 
 const initialState: AuthState = {
   userToken,
   loading: false,
   error: null,
+  success: false,
 };
 
 export const authSlices = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    clearAuthState: (state) => {
+      state.loading = false;
+      state.success = false;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
+
+      // signup
+      .addCase(signupUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(signupUser.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.success = true;
+      })
+      .addCase(signupUser.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = (payload as string) || "Failed to login";
+      })
 
       // login
       .addCase(loginUser.pending, (state) => {
@@ -54,5 +76,7 @@ export const authSlices = createSlice({
       });
   },
 });
+
+export const { clearAuthState } = authSlices.actions;
 
 export default authSlices.reducer;

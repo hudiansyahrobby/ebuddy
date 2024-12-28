@@ -1,7 +1,7 @@
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
 
-export const LoginCard = styled(MuiCard)(({ theme }) => ({
+export const AuthCard = styled(MuiCard)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   alignSelf: "center",

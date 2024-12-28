@@ -13,13 +13,18 @@ import { Controller, useForm } from "react-hook-form";
 import { Route } from "../../../constant/Route";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { userAuthSchema, UserAuthValues } from "@repo/types";
-import { LoginCard } from "./LoginForm.styled";
-import { loginUser } from "../../../store/actions/authActions";
+import { AuthCard } from "./AuthForm.styled";
+import { loginUser, signupUser } from "../../../store/actions/authActions";
 import { useEffect } from "react";
 import MainContainer from "../../Containers/MainContainer/MainContainer";
 import cookie from "js-cookie";
+import Link from "next/link";
 
-export default function LoginForm() {
+type AuthFormProps = {
+  type: "login" | "signup";
+};
+
+export default function AuthForm({ type }: AuthFormProps) {
   const router = useRouter();
   const auth = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
@@ -37,17 +42,32 @@ export default function LoginForm() {
     },
   });
 
-  const onLogin = async (data: UserAuthValues) => {
-    dispatch(loginUser(data));
+  const onSubmit = async (data: UserAuthValues) => {
+    if (isLogin) {
+      dispatch(loginUser(data));
+    } else {
+      dispatch(signupUser(data));
+    }
   };
+
+  const isLogin = type === "login";
+  const isSignup = type === "signup";
 
   useEffect(() => {
     if (auth.userToken) {
       cookie.set("token", auth.userToken);
       router.push(Route.Home);
+      return;
     }
-  }, [auth.userToken, router]);
 
+    if (auth.success && isSignup) {
+      setTimeout(() => {
+        router.push(Route.Login);
+      }, 1000);
+    }
+  }, [auth.userToken, auth.success, router]);
+
+  console.log("auth.success", auth.success);
   return (
     <Container
       component="main"
@@ -60,17 +80,23 @@ export default function LoginForm() {
       }}
     >
       <MainContainer>
-        <LoginCard variant="outlined">
+        <AuthCard variant="outlined">
           <Typography
             component="h1"
             variant="h4"
             sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
           >
-            Login
+            {isLogin ? "Login" : "Register"}
           </Typography>
+
+          {isSignup && auth.success && (
+            <Typography color="success" sx={{ textAlign: "center" }}>
+              You have successfully registered. Please login.
+            </Typography>
+          )}
           <Box
             component="form"
-            onSubmit={handleSubmit(onLogin)}
+            onSubmit={handleSubmit(onSubmit)}
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -127,6 +153,20 @@ export default function LoginForm() {
               )}
             />
 
+            {isLogin ? (
+              <Link href={Route.Signup}>
+                <Typography color="info" fontSize={14}>
+                  Don't have any account ? Please Register
+                </Typography>
+              </Link>
+            ) : (
+              <Link href={Route.Login}>
+                <Typography color="info" fontSize={14}>
+                  Already have an account ? Please Login
+                </Typography>
+              </Link>
+            )}
+
             {auth.error && (
               <Typography color="error" sx={{ textAlign: "center" }}>
                 {auth.error}
@@ -139,10 +179,10 @@ export default function LoginForm() {
               fullWidth
               variant="contained"
             >
-              {auth.loading ? "Signing in..." : "Sign in"}
+              {auth.loading ? "Loading..." : isLogin ? "Sign in" : "Sign up"}
             </Button>
           </Box>
-        </LoginCard>
+        </AuthCard>
       </MainContainer>
     </Container>
   );
